@@ -28,7 +28,12 @@ class Messages extends StatelessWidget {
 
         return chatDocs.isEmpty
             ? const Center(
-                child: Text('start chatting .....'),
+                child: Text(
+                  'start chatting...',
+                  style: TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
               )
             : ListView.builder(
                 reverse: true,
@@ -36,6 +41,7 @@ class Messages extends StatelessWidget {
                 itemBuilder: (ctx, index) => MessageBubble(
                   chatDocs[index]['text'],
                   chatDocs[index]['userId'] == user!.uid,
+                  chatDocs[index]['username'],
                   key: ValueKey(chatDocs[index].id),
                 ),
               );
