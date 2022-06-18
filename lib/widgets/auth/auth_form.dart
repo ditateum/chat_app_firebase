@@ -8,6 +8,24 @@ class AuthForm extends StatefulWidget {
 }
 
 class _AuthFormState extends State<AuthForm> {
+  final _formKey = GlobalKey<FormState>();
+  bool isLogin = true;
+  String userEmail = '';
+  String userName = '';
+  String userPassword = '';
+
+  void _trySubmit() {
+    final isValid = _formKey.currentState?.validate();
+    FocusScope.of(context).unfocus();
+
+    if (isValid!) {
+      _formKey.currentState?.save();
+      print(userEmail);
+      print(userName);
+      print(userPassword);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -17,37 +35,87 @@ class _AuthFormState extends State<AuthForm> {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Form(
+              key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
+                    key: const ValueKey('email'),
+                    validator: (value) {
+                      if (value != null) {
+                        if (value.isEmpty || !value.contains("@")) {
+                          return "Please enter a valid email address.";
+                        }
+                      }
+                      return null;
+                    },
                     keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
                       labelText: 'Email address',
                     ),
+                    onSaved: (value) {
+                      if (value != null) {
+                        userEmail = value;
+                      }
+                    },
                   ),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Username',
+                  if (!isLogin)
+                    TextFormField(
+                      key: const ValueKey('username'),
+                      validator: (value) {
+                        if (value != null) {
+                          if (value.isEmpty || value.length < 4) {
+                            return 'Please enter at least 4 characters.';
+                          }
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Username',
+                      ),
+                      onSaved: (value) {
+                        if (value != null) {
+                          userName = value;
+                        }
+                      },
                     ),
-                  ),
                   TextFormField(
+                    key: const ValueKey('password'),
+                    validator: (value) {
+                      if (value != null) {
+                        if (value.isEmpty || value.length < 7) {
+                          return 'Password must be at least 7 characters long';
+                        }
+                      }
+                      return null;
+                    },
                     obscureText: true,
                     decoration: const InputDecoration(
                       labelText: 'Password',
                     ),
+                    onSaved: (value) {
+                      if (value != null) {
+                        userPassword = value;
+                      }
+                    },
                   ),
                   const SizedBox(
                     height: 12,
                   ),
                   ElevatedButton(
-                    onPressed: () {},
-                    child: const Text("Login"),
+                    onPressed: _trySubmit,
+                    child: Text(isLogin ? "Login" : "Register"),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        isLogin = !isLogin;
+                      });
+                    },
                     child: Text(
-                      "Create new account",
+                      isLogin
+                          ? "Create new account"
+                          : 'I already have an account',
                       style: TextStyle(
                         color: Theme.of(context).primaryColor,
                       ),
