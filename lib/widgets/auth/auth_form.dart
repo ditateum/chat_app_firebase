@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
-  const AuthForm({Key? key}) : super(key: key);
+  final void Function(
+    String email,
+    String userName,
+    String password,
+    bool isLogin,
+  ) sumbitFn;
+
+  const AuthForm(this.sumbitFn, {Key? key}) : super(key: key);
 
   @override
   State<AuthForm> createState() => _AuthFormState();
@@ -20,9 +27,7 @@ class _AuthFormState extends State<AuthForm> {
 
     if (isValid!) {
       _formKey.currentState?.save();
-      print(userEmail);
-      print(userName);
-      print(userPassword);
+      widget.sumbitFn(userEmail, userName, userPassword, isLogin);
     }
   }
 
