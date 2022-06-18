@@ -27,7 +27,12 @@ class _AuthFormState extends State<AuthForm> {
 
     if (isValid!) {
       _formKey.currentState?.save();
-      widget.sumbitFn(userEmail, userName, userPassword, isLogin);
+      widget.sumbitFn(
+        userEmail.trim(),
+        userName.trim(),
+        userPassword.trim(),
+        isLogin,
+      );
     }
   }
 
