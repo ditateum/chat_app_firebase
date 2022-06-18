@@ -6,9 +6,11 @@ class AuthForm extends StatefulWidget {
     String userName,
     String password,
     bool isLogin,
+    BuildContext ctx,
   ) sumbitFn;
+  final bool isLoading;
 
-  const AuthForm(this.sumbitFn, {Key? key}) : super(key: key);
+  const AuthForm(this.sumbitFn, this.isLoading, {Key? key}) : super(key: key);
 
   @override
   State<AuthForm> createState() => _AuthFormState();
@@ -32,6 +34,7 @@ class _AuthFormState extends State<AuthForm> {
         userName.trim(),
         userPassword.trim(),
         isLogin,
+        context,
       );
     }
   }
@@ -112,25 +115,28 @@ class _AuthFormState extends State<AuthForm> {
                   const SizedBox(
                     height: 12,
                   ),
-                  ElevatedButton(
-                    onPressed: _trySubmit,
-                    child: Text(isLogin ? "Login" : "Register"),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        isLogin = !isLogin;
-                      });
-                    },
-                    child: Text(
-                      isLogin
-                          ? "Create new account"
-                          : 'I already have an account',
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
+                  if (widget.isLoading) const CircularProgressIndicator(),
+                  if (!widget.isLoading)
+                    ElevatedButton(
+                      onPressed: _trySubmit,
+                      child: Text(isLogin ? "Login" : "Register"),
+                    ),
+                  if (!widget.isLoading)
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          isLogin = !isLogin;
+                        });
+                      },
+                      child: Text(
+                        isLogin
+                            ? "Create new account"
+                            : 'I already have an account',
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

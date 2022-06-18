@@ -1,4 +1,5 @@
 import 'package:chat_app_firebase/widgets/auth/auth_form.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,16 +13,21 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _auth = FirebaseAuth.instance;
+  bool isLoading = false;
 
   void _submitAuthForm(
     String email,
     String userName,
     String password,
     bool isLogin,
+    BuildContext ctx,
   ) async {
     UserCredential userCredential;
 
     try {
+      setState(() {
+        isLoading = true;
+      });
       if (isLogin) {
         userCredential = await _auth.signInWithEmailAndPassword(
           email: email,
@@ -32,6 +38,14 @@ class _AuthScreenState extends State<AuthScreen> {
           email: email,
           password: password,
         );
+
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(userCredential.user!.uid)
+            .set({
+          'username': userName,
+          'email': email,
+        });
       }
     } on PlatformException catch (err) {
       var message = 'An error occurred, please check your credentials!';
@@ -40,7 +54,7 @@ class _AuthScreenState extends State<AuthScreen> {
         message = err.message!;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(ctx).showSnackBar(
         SnackBar(
           content: Text(message),
           backgroundColor: Theme.of(context).errorColor,
@@ -48,6 +62,16 @@ class _AuthScreenState extends State<AuthScreen> {
       );
     } catch (err) {
       print(err);
+
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text(err.toString()),
+          backgroundColor: Theme.of(context).errorColor,
+        ),
+      );
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -55,7 +79,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
-      body: AuthForm(_submitAuthForm),
+      body: AuthForm(_submitAuthForm, isLoading),
     );
   }
 }
