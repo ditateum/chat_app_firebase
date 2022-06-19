@@ -1,5 +1,4 @@
 import 'package:chat_app_firebase/utils/constant.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class MessageBubble extends StatelessWidget {
