@@ -17,7 +17,11 @@ class _UserImagePickerState extends State<UserImagePicker> {
 
   void _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final pickedImageFile = await picker.pickImage(source: ImageSource.camera);
+    final pickedImageFile = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 50,
+      maxWidth: 150,
+    );
 
     if (pickedImageFile == null) {
       // ignore: use_build_context_synchronously
